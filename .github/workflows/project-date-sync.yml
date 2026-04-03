@@ -36,8 +36,6 @@ jobs:
         with:
           github-token: ${{ secrets.PROJECTS_TOKEN || github.token }}
           script: |
-            const core = require('@actions/core')
-
             const owner = process.env.PROJECT_OWNER || context.repo.owner
             const projectNumber = Number(process.env.PROJECT_NUMBER)
             const statusFieldName = process.env.STATUS_FIELD_NAME || 'Status'
