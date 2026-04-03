@@ -75,44 +75,48 @@ jobs:
 
             const projectQuery = `
               query($login: String!, $number: Int!) {
-                organization(login: $login) {
-                  projectV2(number: $number) {
-                    id
-                    title
-                    fields(first: 100) {
-                      nodes {
-                        ... on ProjectV2FieldCommon {
-                          id
-                          name
-                        }
-                        ... on ProjectV2SingleSelectField {
-                          id
-                          name
-                          options {
+                repositoryOwner(login: $login) {
+                  __typename
+                  login
+                  ... on Organization {
+                    projectV2(number: $number) {
+                      id
+                      title
+                      fields(first: 100) {
+                        nodes {
+                          ... on ProjectV2FieldCommon {
                             id
                             name
+                          }
+                          ... on ProjectV2SingleSelectField {
+                            id
+                            name
+                            options {
+                              id
+                              name
+                            }
                           }
                         }
                       }
                     }
                   }
-                }
-                user(login: $login) {
-                  projectV2(number: $number) {
-                    id
-                    title
-                    fields(first: 100) {
-                      nodes {
-                        ... on ProjectV2FieldCommon {
-                          id
-                          name
-                        }
-                        ... on ProjectV2SingleSelectField {
-                          id
-                          name
-                          options {
+                  ... on User {
+                    projectV2(number: $number) {
+                      id
+                      title
+                      fields(first: 100) {
+                        nodes {
+                          ... on ProjectV2FieldCommon {
                             id
                             name
+                          }
+                          ... on ProjectV2SingleSelectField {
+                            id
+                            name
+                            options {
+                              id
+                              name
+                            }
                           }
                         }
                       }
@@ -191,7 +195,7 @@ jobs:
               number: projectNumber,
             })
 
-            const project = projectResponse.organization?.projectV2 || projectResponse.user?.projectV2
+            const project = projectResponse.repositoryOwner?.projectV2
             if (!project) {
               core.setFailed(`未找到 ${owner} 名下编号为 ${projectNumber} 的 ProjectV2。`)
               return
@@ -251,6 +255,15 @@ jobs:
                 const normalizedStatus = normalize(statusValue)
 
                 if (normalizedStatus === normalize(doingOptionName) && !startDate) {
+                  updates.push({
+                    itemId: item.id,
+                    fieldId: startDateField.id,
+                    fieldName: startDateFieldName,
+                    title,
+                  })
+                }
+
+                if (normalizedStatus === normalize(doneOptionName) && !startDate) {
                   updates.push({
                     itemId: item.id,
                     fieldId: startDateField.id,
