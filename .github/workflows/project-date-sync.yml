@@ -263,6 +263,15 @@ jobs:
                   })
                 }
 
+                if (normalizedStatus === normalize(doneOptionName) && !startDate) {
+                  updates.push({
+                    itemId: item.id,
+                    fieldId: startDateField.id,
+                    fieldName: startDateFieldName,
+                    title,
+                  })
+                }
+
                 if (normalizedStatus === normalize(doneOptionName) && !endDate) {
                   updates.push({
                     itemId: item.id,
